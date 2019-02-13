@@ -1,6 +1,5 @@
 /**************************************************************
   BASIC SELECT STATEMENTS
-  Works for SQLite, MySQL, Postgres
 **************************************************************/
 
 /**************************************************************
@@ -25,7 +24,7 @@ select sName, major
 from Student, Apply
 where Student.sID = Apply.sID;
 
-/*** Same query with Distinct, note difference from algebra ***/
+/*** Same query with Distinct ***/
 
 select distinct sName, major
 from Student, Apply
@@ -45,20 +44,6 @@ where Student.sID = Apply.sID
   All large campuses with CS applicants
 **************************************************************/
 
-select cName
-from College, Apply
-where College.cName = Apply.cName
-  and enrollment > 20000 and major = 'CS';
-
-/*** Fix error ***/
-
-select College.cName
-from College, Apply
-where College.cName = Apply.cName
-  and enrollment > 20000 and major = 'CS';
-
-/*** Add Distinct ***/
-
 select distinct College.cName
 from College, Apply
 where College.cName = Apply.cName
@@ -67,19 +52,6 @@ where College.cName = Apply.cName
 /**************************************************************
   Application information
 **************************************************************/
-
-select Student.sID, sName, GPA, Apply.cName, enrollment
-from Student, College, Apply
-where Apply.sID = Student.sID and Apply.cName = College.cName;
-
-/*** Sort by decreasing GPA ***/
-
-select Student.sID, sName, GPA, Apply.cName, enrollment
-from Student, College, Apply
-where Apply.sID = Student.sID and Apply.cName = College.cName
-order by GPA desc;
-
-/*** Then by increasing enrollment ***/
 
 select Student.sID, sName, GPA, Apply.cName, enrollment
 from Student, College, Apply
@@ -94,12 +66,6 @@ select sID, major
 from Apply
 where major like '%bio%';
 
-/*** Same query with Select * ***/
-
-select *
-from Apply
-where major like '%bio%';
-
 /**************************************************************
   Select * cross-product
 **************************************************************/
@@ -109,13 +75,7 @@ from Student, College;
 
 /**************************************************************
   Add scaled GPA based on sizeHS
-  Also note missing Where clause
 **************************************************************/
-
-select sID, sName, GPA, sizeHS, GPA*(sizeHS/1000.0)
-from Student;
-
-/*** Rename result attribute ***/
 
 select sID, sName, GPA, sizeHS, GPA*(sizeHS/1000.0) as scaledGPA
 from Student;
