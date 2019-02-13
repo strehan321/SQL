@@ -1,7 +1,5 @@
 /**************************************************************
   AGGREGATION
-  Works for SQLite, MySQL
-  Postgres doesn't allow ambiguous Select columns in Group-by queries
 **************************************************************/
 
 /**************************************************************
@@ -22,12 +20,6 @@ where Student.sID = Apply.sID and major = 'CS';
 /*** Average GPA of students applying to CS ***/
 
 select avg(GPA)
-from Student, Apply
-where Student.sID = Apply.sID and major = 'CS';
-
-/*** Fix incorrect counting of GPAs ***/
-
-select avg(GPA)
 from Student
 where sID in (select sID from Apply where major = 'CS');
 
@@ -42,16 +34,6 @@ where enrollment > 15000;
 /**************************************************************
   Number of students applying to Cornell
 **************************************************************/
-
-select count(*)
-from Apply
-where cName = 'Cornell';
-
-/*** Show why incorrect result, fix using Count Distinct ***/
-
-select *
-from Apply
-where cName = 'Cornell';
 
 select Count(Distinct sID)
 from Apply
@@ -82,7 +64,7 @@ from (select avg(GPA) as avgGPA from Student
       where sID not in (
          select sID from Apply where major = 'CS')) as NonCS;
 
-/*** Same using subqueries in Select ***/
+/*** Using subqueries in Select ***/
 
 select (select avg(GPA) as avgGPA from Student
         where sID in (
@@ -110,18 +92,6 @@ select cName, count(*)
 from Apply
 group by cName;
 
-/*** First do query to picture grouping ***/
-
-select *
-from Apply
-order by cName;
-
-/*** Now back to query we want ***/
-
-select cName, count(*)
-from Apply
-group by cName;
-
 /**************************************************************
   College enrollments by state
 **************************************************************/
@@ -133,20 +103,6 @@ group by state;
 /**************************************************************
   Minimum + maximum GPAs of applicants to each college & major
 **************************************************************/
-
-select cName, major, min(GPA), max(GPA)
-from Student, Apply
-where Student.sID = Apply.sID
-group by cName, major;
-
-/*** First do query to picture grouping ***/
-
-select cName, major, GPA
-from Student, Apply
-where Student.sID = Apply.sID
-order by cName, major;
-
-/*** Now back to query we want ***/
 
 select cName, major, min(GPA), max(GPA)
 from Student, Apply
@@ -170,20 +126,6 @@ from Student, Apply
 where Student.sID = Apply.sID
 group by Student.sID;
 
-/*** First do query to picture grouping ***/
-
-select Student.sID, cName
-from Student, Apply
-where Student.sID = Apply.sID
-order by Student.sID;
-
-/*** Now back to query we want ***/
-
-select Student.sID, count(distinct cName)
-from Student, Apply
-where Student.sID = Apply.sID
-group by Student.sID;
-
 /*** Add student name ***/
 
 select Student.sID, sName, count(distinct cName)
@@ -191,28 +133,7 @@ from Student, Apply
 where Student.sID = Apply.sID
 group by Student.sID;
 
-/*** First do query to picture grouping ***/
-
-select Student.sID, sName, cName
-from Student, Apply
-where Student.sID = Apply.sID
-order by Student.sID;
-
-/*** Now back to query we want ***/
-
-select Student.sID, sName, count(distinct cName)
-from Student, Apply
-where Student.sID = Apply.sID
-group by Student.sID;
-
-/*** Add college (shouldn't work but does in some systems) ***/
-
-select Student.sID, sName, count(distinct cName), cName
-from Student, Apply
-where Student.sID = Apply.sID
-group by Student.sID;
-
-/*** Back to query to picture grouping ***/
+/*** Add college ***/
 
 select Student.sID, sName, cName
 from Student, Apply
@@ -229,7 +150,7 @@ from Student, Apply
 where Student.sID = Apply.sID
 group by Student.sID;
 
-/*** Now add 0 counts ***/
+/*** Now adding 0 counts ***/
 
 select Student.sID, count(distinct cName)
 from Student, Apply
