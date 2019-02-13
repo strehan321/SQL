@@ -1,6 +1,5 @@
 /**************************************************************
   NULL VALUES
-  Works for SQLite, MySQL, Postgres
 **************************************************************/
 
 insert into Student values (432, 'Kevin', null, 1500);
@@ -32,7 +31,7 @@ where GPA > 3.5 or GPA <= 3.5;
 
 select sID, sName from Student;
 
-/*** Now use 'is null' ***/
+/*** 'is null' ***/
 
 select sID, sName, GPA
 from Student
