@@ -1,8 +1,5 @@
 /**************************************************************
   JOIN OPERATORS
-  Works for Postgres
-  MySQL doesn't support FULL OUTER JOIN
-  SQLite doesn't support RIGHT or FULL OUTER JOIN
 **************************************************************/
 
 /**************************************************************
@@ -14,16 +11,10 @@ select distinct sName, major
 from Student, Apply
 where Student.sID = Apply.sID;
 
-/*** Rewrite using INNER JOIN ***/
+/*** Using INNER JOIN ***/
 
 select distinct sName, major
 from Student inner join Apply
-on Student.sID = Apply.sID;
-
-/*** Abbreviation is JOIN ***/
-
-select distinct sName, major
-from Student join Apply
 on Student.sID = Apply.sID;
 
 /**************************************************************
@@ -37,14 +28,14 @@ from Student, Apply
 where Student.sID = Apply.sID
   and sizeHS < 1000 and major = 'CS' and cName = 'Stanford';
 
-/*** Rewrite using JOIN ***/
+/*** Using JOIN ***/
 
 select sName, GPA
 from Student join Apply
 on Student.sID = Apply.sID
 where sizeHS < 1000 and major = 'CS' and cName = 'Stanford';
 
-/*** Can move everything into JOIN ON condition ***/
+/*** Another JOIN condition ***/
 
 select sName, GPA
 from Student join Apply
@@ -60,14 +51,13 @@ select Apply.sID, sName, GPA, Apply.cName, enrollment
 from Apply, Student, College
 where Apply.sID = Student.sID and Apply.cName = College.cName;
 
-/*** Rewrite using three-way JOIN ***/
-/*** Works in SQLite and MySQL but not Postgres ***/
+/*** Using three-way JOIN ***/
 
 select Apply.sID, sName, GPA, Apply.cName, enrollment
 from Apply join Student join College
 on Apply.sID = Student.sID and Apply.cName = College.cName;
 
-/*** Rewrite using binary JOIN ***/
+/*** Using binary JOIN ***/
 
 select Apply.sID, sName, GPA, Apply.cName, enrollment
 from (Apply join Student on Apply.sID = Student.sID) join College on Apply.cName = College.cName;
@@ -81,23 +71,10 @@ select distinct sName, major
 from Student inner join Apply
 on Student.sID = Apply.sID;
 
-/*** Rewrite using NATURAL JOIN ***/
+/*** Using NATURAL JOIN ***/
 
 select distinct sName, major
 from Student natural join Apply;
-
-/*** Like relational algebra, eliminates duplicate columns ***/
-
-select *
-from Student natural join Apply;
-
-select distinct sID
-from Student natural join Apply;
-
-/*** Would get ambiguity error with cross-product ***/
-
-select distinct sID
-from Student, Apply;
 
 /**************************************************************
   NATURAL JOIN WITH ADDITIONAL CONDITIONS
@@ -110,13 +87,13 @@ from Student join Apply
 on Student.sID = Apply.sID
 where sizeHS < 1000 and major = 'CS' and cName = 'Stanford';
 
-/*** Rewrite using NATURAL JOIN ***/
+/*** NATURAL JOIN ***/
 
 select sName, GPA
 from Student natural join Apply
 where sizeHS < 1000 and major = 'CS' and cName = 'Stanford';
 
-/*** USING clause considered safer ***/
+/*** USING clause ***/
 
 select sName, GPA
 from Student join Apply using(sID)
@@ -131,11 +108,6 @@ select S1.sID, S1.sName, S1.GPA, S2.sID, S2.sName, S2.GPA
 from Student S1, Student S2
 where S1.GPA = S2.GPA and S1.sID < S2.sID;
 
-/*** Rewrite using JOIN and USING (disallowed) ***/
-
-select S1.sID, S1.sName, S1.GPA, S2.sID, S2.sName, S2.GPA
-from Student S1 join Student S2 on S1.sID < S2.sID using(GPA);
-
 /*** Without ON clause ***/
 
 select S1.sID, S1.sName, S1.GPA, S2.sID, S2.sName, S2.GPA
@@ -148,10 +120,6 @@ where S1.sID < S2.sID;
 
 select *
 from Student S1 natural join Student S2;
-
-/*** Verify equivalence to Student ***/
-
-select * from Student;
 
 /**************************************************************
   LEFT OUTER JOIN
@@ -166,17 +134,17 @@ from Student inner join Apply using(sID);
 select sName, sID, cName, major
 from Student left outer join Apply using(sID);
 
-/*** Abbreviation is LEFT JOIN ***/
+/***  LEFT JOIN ***/
 
 select sName, sID, cName, major
 from Student left join Apply using(sID);
 
-/*** Using NATURAL OUTER JOIN ***/
+/***  NATURAL OUTER JOIN ***/
 
 select sName, sID, cName, major
 from Student natural left outer join Apply;
 
-/*** Can simulate without any JOIN operators ***/
+/*** Without any JOIN operators ***/
 
 select sName, Student.sID, cName, major
 from Student, Apply
@@ -186,7 +154,7 @@ select sName, sID, NULL, NULL
 from Student
 where sID not in (select sID from Apply);
 
-/*** Instead include applications without matching students ***/
+/*** Applications without matching students ***/
 
 insert into Apply values (321, 'MIT', 'history', 'N');
 insert into Apply values (321, 'MIT', 'psychology', 'Y');
@@ -214,29 +182,6 @@ from Student natural right outer join Apply;
 
 select sName, sID, cName, major
 from Student full outer join Apply using(sID);
-
-/*** Can simulate with LEFT and RIGHT outerjoins ***/
-/*** Note UNION eliminates duplicates ***/
-
-select sName, sID, cName, major
-from Student left outer join Apply using(sID)
-union
-select sName, sID, cName, major
-from Student right outer join Apply using(sID);
-
-/*** Can simulate without any JOIN operators ***/
-
-select sName, Student.sID, cName, major
-from Student, Apply
-where Student.sID = Apply.sID
-union
-select sName, sID, NULL, NULL
-from Student
-where sID not in (select sID from Apply)
-union
-select NULL, sID, cName, major
-from Apply
-where sID not in (select sID from Student);
 
 /**************************************************************
   THREE-WAY OUTER JOIN
